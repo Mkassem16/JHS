@@ -1,0 +1,22 @@
+ ### CODEBOOK 
+ ## Loading data from localhost 
+ xts testing data 
+ xtr training data 
+ yts testing labels 
+ ytr trainig labels 
+ cols features  
+ actlbl activities 
+ colslist list of features 
+ xall testing plus trainig data df
+ yall testing plus training labels df 
+ xyall data df plus labels df 
+ extract function to extract the value of list of features 
+ colslistvall extracting all values of features list 
+ ## using colslistvall as column names for xyall 
+ ## renaming  column 562 as "label"
+ xylbl merge between xyall and actlbl to add activities
+ ## renaming column 563 as "activity"
+ morstd values of mean and std patterns locations in cloumns of xylbl
+ xyfinal df with columns with morstd locations only 
+ xygroup grouping df by activity
+ xytidy summarizing by average of each variable for each activity
