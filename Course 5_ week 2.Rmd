@@ -1,0 +1,80 @@
+---
+title: "WEEK 2 PROJECT"
+author: "M.KASSEM"
+date: "5/19/2019"
+output: html_document
+---
+
+```{r setoptions, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, results = "hide", cache = TRUE, message = FALSE, warning = FALSE)
+```
+
+## Loading libraries and Data 
+```{r loading, message= FALSE}
+library(ggplot2)
+library(lubridate)
+library(dplyr)
+df <- read.csv("/Users/ayman/Downloads/R/activity.csv", header = TRUE, stringsAsFactors = FALSE)
+```
+
+## Cleaning data 
+```{r cleaning}
+df$date <- as.Date(as.character(df$date), "%Y-%m-%d")
+```
+
+## Data overview 
+```{r overview, echo = TRUE, results= TRUE}
+glimpse(df)
+head(df)
+```
+
+## Total number of steps taken per day histogram 
+``` {r Q2, echo = TRUE, results = TRUE}
+hist(df$steps, main = "Histogram including 0 and NA values")
+```
+
+## Mean and Median steps for each day 
+```{r Q3, echo= TRUE, results= TRUE}
+df2 <- df %>% group_by(date) %>% summarize(mean_day = mean(steps, na.rm = TRUE), median_day = median(steps[!steps == 0], na.rm = TRUE))
+head(df2)
+df2n <- na.omit(df2) # removing NaN 
+head(df2n, 10)
+```
+
+##  Time series plot of the average number of steps taken
+```{r Q4, echo = TRUE, results= TRUE}
+plot(df2$date, df2$mean_day, data = df2, pch = 20, main = "AVG steps per day time series")
+```
+
+## The 5-minute interval that, on average, contains the maximum number of steps
+```{r Q5, echo = TRUE, results= TRUE}
+df3 <- df %>% group_by(interval) %>% summarize(avg_steps_interval = mean(steps, na.rm = TRUE)) %>% arrange(desc(avg_steps_interval))
+df3[1,]
+``` 
+
+## Code to describe and show a strategy for imputing missing data
+*Missing data is 13% of the total data Therfore I am going to omit them*
+```{r Q6, echo= TRUE, results= TRUE}
+mean(is.na(df$steps))
+```
+
+## Histogram of the total number of steps taken each day after missing values are imputed
+```{r Q7, echo= TRUE, results= TRUE}
+df1 <- df %>% group_by(date) %>% summarise(steps_day = sum(steps, na.rm = TRUE))
+hist(df1$steps_day, main = "Steps per day frequency")
+```
+
+
+## Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
+```{r Q8, echo= TRUE, results= TRUE}
+df4 <- df %>% group_by(week_day = wday(date, label = TRUE)) %>% summarize(mean_day = mean(steps, na.rm = TRUE))
+df5 <- df4 %>% mutate(wdaylbl = case_when(week_day %in% c("Mon", "Tue", "Wed", "Thu", "Fri") ~ "Weekday",
+                                          week_day %in% c("Sat", "Sun") ~ "Weekend")) %>%
+        group_by(wdaylbl) %>% summarize(mean(mean_day))
+
+
+as.data.frame(df5)
+
+barplot(df5$`mean(mean_day)`, names.arg = c("Weekdays", "weekends"), ylab = "AVG steps", main = " AVG steps / 5mins intervals ")
+```
+
